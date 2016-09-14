@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+
+  <style>
+    h2 {
+      text-align: center;
+    }
+  </style>
+
+  <script type="text/javascript">
+    function draw(data) {
+    
+    /*
+      D3.js setup code
+    */
+
+        "use strict";
+        var margin = 75,
+            width = 1400 - margin,
+            height = 600 - margin;
+
+        // select the body tag with d3 selector and append a title
+        d3.select("body")
+          .append("h2")
+          .text("Women and Upper Class Passengers Had Higher Survival Rates on the Titanic")
+
+        // select the body tag, append an svg element and set its dimensions
+        var svg = d3.select("body")
+          .append("svg")
+            .attr("width", width + margin)
+            .attr("height", height + margin)
+          .append('g')
+              .attr('class','chart');
+
+    /*
+      Dimple.js Chart construction code
+    */
+
+        var myChart = new dimple.chart(svg, data);
+
+        // set x axis and define the order of groups
+        var x = myChart.addCategoryAxis("x", ["Sex","Pclass"]);
+        x.addGroupOrderRule(["1", "2", "3"]);
+
+        // set y axis and display its values as percentages 
+        var y = myChart.addMeasureAxis("y", "Survived");
+        y.tickFormat = "%";
+        
+        // create the bar plot and average the values on y axis
+        var mySeries = myChart.addSeries(["Pclass"], dimple.plot.bar);
+        mySeries.aggregate = dimple.aggregateMethod.avg;
+
+        // add a legend in the upper right corner
+        var myLegend = myChart.addLegend(0, 20, width, 20, "right");
+
+        // add a title to legend
+        svg.selectAll("title_text")
+          .data(["Passenger class"])
+          .enter()
+          .append("text")
+            .attr("x", width - margin - 15)
+            .attr("y", 10)
+            .style("font-family", "sans-serif")
+            .style("font-size", "10px")
+            .style("color", "Black")
+            .text(function (d) { return d; });
+
+        myChart.draw(800);
+
+        d3.select('g.dimple-1')
+
+      };
+    </script>
+  </head>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the TSV file
+    and pass the contents of it to the draw function
+    */
+  d3.csv("titanic_data.csv", draw);
+  </script>
+</body>
+</html>
